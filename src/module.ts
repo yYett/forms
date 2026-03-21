@@ -1,7 +1,16 @@
-import { defineNuxtModule, addPlugin, createResolver } from "@nuxt/kit";
+import {
+  defineNuxtModule,
+  addPlugin,
+  createResolver,
+  addComponentsDir,
+} from "@nuxt/kit";
 
 // Module options TypeScript interface definition
-export interface ModuleOptions {}
+export interface ModuleOptions {
+  fields: {
+    select: "default" | "custom";
+  };
+}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -19,7 +28,7 @@ export default defineNuxtModule<ModuleOptions>({
   // Default configuration options for your module, can also be a function returning those
   defaults: {
     fields: {
-      //
+      select: "default",
     },
   },
 
@@ -29,7 +38,16 @@ export default defineNuxtModule<ModuleOptions>({
   setup(_options, _nuxt) {
     const resolver = createResolver(import.meta.url);
 
-    // // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    // addPlugin(resolver.resolve('./runtime/plugin'))
+    _nuxt.hook("vite:serverCreated", (server) => {
+      server.middlewares.use((err: any, _req: any, _res: any, next: any) => {
+        console.error("[module error]", err);
+        next(err);
+      });
+    });
+
+    addComponentsDir({
+      path: resolver.resolve("./runtime/base/components"),
+      global: true,
+    });
   },
 });
