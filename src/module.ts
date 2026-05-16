@@ -1,16 +1,7 @@
-import {
-  defineNuxtModule,
-  addPlugin,
-  createResolver,
-  addComponentsDir,
-} from "@nuxt/kit";
+import { defineNuxtModule, createResolver, addComponentsDir } from "@nuxt/kit";
 
 // Module options TypeScript interface definition
-export interface ModuleOptions {
-  fields: {
-    select: "default" | "custom";
-  };
-}
+export interface ModuleOptions {}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -26,11 +17,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
 
   // Default configuration options for your module, can also be a function returning those
-  defaults: {
-    fields: {
-      select: "default",
-    },
-  },
+  defaults: {},
 
   // Shorthand sugar to register Nuxt hooks
   hooks: {},
@@ -46,7 +33,7 @@ export default defineNuxtModule<ModuleOptions>({
     });
 
     addComponentsDir({
-      path: resolver.resolve("./runtime/base/components"),
+      path: resolver.resolve("./runtime/components"),
       global: true,
     });
   },
