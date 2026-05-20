@@ -27,10 +27,10 @@ export default defineComponent({
     return (): VNode =>
       h(
         "div",
-        { clas: `form-field w--${props.width || 12}` },
+        { class: `form-field w--${props.width || 12}` },
         [
           props.label &&
-            h("label", { for: id, clas: "field-label" }, props.label),
+            h("label", { for: id, class: "field-label" }, props.label),
 
           slots?.start?.(),
 
