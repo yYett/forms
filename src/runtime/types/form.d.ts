@@ -70,6 +70,7 @@ export type Select = {
 
 export type FieldMap = {
   text: Text;
+  select: Select;
 };
 
 export type Field = {
