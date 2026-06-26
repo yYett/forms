@@ -1,5 +1,5 @@
 import type { PropType, VNode } from "vue";
-import { defineComponent, h, useId } from "vue";
+import { defineComponent, h, useId, watchEffect } from "vue";
 import { fieldControls } from "../utils/controls";
 
 export default defineComponent({
@@ -23,6 +23,10 @@ export default defineComponent({
 
   setup(props, { slots, attrs, emit, expose }) {
     const id = useId();
+
+    watchEffect(() => {
+      console.log("Field Changed", props.label, props);
+    });
 
     return (): VNode =>
       h(
