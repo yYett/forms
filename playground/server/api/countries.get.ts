@@ -2,6 +2,7 @@ import { getQuery } from "h3";
 
 export default eventHandler((event) => {
   const countries = [
+    { label: "", value: "" },
     { label: "PT", value: "pt" },
     { label: "ES", value: "es" },
     { label: "FR", value: "fr" },

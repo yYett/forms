@@ -6,13 +6,11 @@ export function useGraph(nodes: Map<string, any>) {
         acc[dep].push(key);
       }
 
-      if (node.strategy === "fetch") {
-        acc["$requests"]!.push(key);
-      }
+      acc["$nodes"]!.push(key);
 
       return acc;
     },
-    { $requests: [] },
+    { $nodes: [] },
   );
 
   console.log("graph", graph);

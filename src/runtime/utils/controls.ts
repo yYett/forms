@@ -17,57 +17,73 @@ export const fieldControls = {
   text: ({
     modelValue,
     "onUpdate:modelValue": onUpdate,
+    style: _style,
+    $nodes: _$nodes,
+    visible: _visible,
     ...attrs
-  }: ControlArgs): VNode =>
-    h("input", {
+  }: ControlArgs): VNode => {
+    return h("input", {
       ...attrs,
       value: modelValue || "",
       onInput: onInputValue(onUpdate),
-    }),
+    });
+  },
 
   radio: ({
     modelValue,
     "onUpdate:modelValue": onUpdate,
+    style: _style,
+    $nodes: _$nodes,
+    visible: _visible,
     ...rest
-  }: ControlArgs) =>
-    h("input", {
+  }: ControlArgs) => {
+    return h("input", {
       ...rest,
       type: "radio",
       autocomplete: "off",
       checked: modelValue === rest.value,
       onChange: onInputValue(onUpdate),
-    }),
+    });
+  },
 
   checkbox: ({
     modelValue,
     "onUpdate:modelValue": onUpdate,
+    style: _style,
+    $nodes: _$nodes,
+    visible: _visible,
     ...rest
-  }: ControlArgs) =>
-    h("input", {
+  }: ControlArgs) => {
+    return h("input", {
       ...rest,
       type: "checkbox",
       checked: modelValue,
       onChange: onChangeChecked(onUpdate),
-    }),
+    });
+  },
 
   select: ({
     modelValue,
     "onUpdate:modelValue": onUpdate,
     options,
+    style: _style,
+    $nodes: _$nodes,
+    visible: _visible,
     ...attrs
-  }: ControlArgs) =>
-    h(
+  }: ControlArgs) => {
+    return h(
       "select",
       {
         ...attrs,
         value: modelValue ?? "",
         onChange: onInputValue(onUpdate),
+        autocomplete: "off",
       },
-      options?.map(
-        ({ label, value }: { label: string; value: string }) =>
-          label && value && h("option", { value }, label),
+      options?.map(({ label, value }: { label: string; value: string }) =>
+        h("option", { value }, label),
       ),
-    ),
+    );
+  },
 
   // combobox: (args: any) => h(MyCombobox, args),
   // checkboxGroup: (args: any) => h(MyCheckboxGroup, args),

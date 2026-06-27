@@ -28,6 +28,12 @@ const data = {
       },
     },
     {
+      as: "text",
+      label: "Name",
+      name: "name",
+      visible: ["notEmpty", "$country"],
+    },
+    {
       as: "select",
       label: "City",
       name: "city",
@@ -116,8 +122,7 @@ const data = {
   ],
 };
 
-const { fields, state, runtime, runNodeRequests, populateState, set } =
-  useEngine(data);
+const { fields, state, runNodeRequests, populateState, set } = useEngine(data);
 
 const { data: nodeResults } = await useAsyncData(
   "node-requests",
@@ -131,13 +136,12 @@ populateState(nodeResults.value);
     <h2>Tester</h2>
 
     <ClientOnly>
-      <pre>{{ runtime }}</pre>
       <pre>{{ state }}</pre>
     </ClientOnly>
 
     <Field
       v-for="{ visible, id, ...attributes } in fields"
-      key="id"
+      :key="id"
       v-model="state[id].value"
       v-bind="{ id, ...attributes, ...state[id] }"
       v-show="state[id].visible"
@@ -146,7 +150,6 @@ populateState(nodeResults.value);
       <!-- <template #meta>
         <pre> {{ { ...attributes, ...state[id] } }}</pre>
       </template> -->
-      <!-- slots -->
     </Field>
   </div>
 </template>

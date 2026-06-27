@@ -28,18 +28,23 @@ export function useEngine(data: any) {
     state[field.id] = runtime;
   }
 
-  const { resolveGuard, buildRequest, execute } = useExecutor(nodes, state);
+  const { resolveGuard, buildRequest, executeNode, execute } = useExecutor(
+    nodes,
+    state,
+  );
+  console.log("state", state);
 
-  const runNodeRequests = async () => {
-    const tasks = (graph.$requests ?? []).flatMap((key) => {
+  /**
+   * Init path: batch-executes all $nodes.
+   * Uses executeNode so expr, fetch, and future strategies all work without extra code.
+   */
+  const runNodeRequests = async (): Promise<Record<string, any>> => {
+    const tasks = (graph.$nodes ?? []).flatMap((key: string) => {
       const node = nodes.get(key);
-      if (!node || !resolveGuard(node.guard)) return [];
+      if (!node) return [];
 
-      const taskFn = buildRequest(node);
-      if (!taskFn) return [];
-
-      // Execute the function immediately and bundle the result with its key
-      return [taskFn().then((res) => [key, res] as const)];
+      const task = executeNode(key, node);
+      return task ? [task] : [];
     });
 
     if (!tasks.length) return {};
@@ -48,11 +53,11 @@ export function useEngine(data: any) {
     const responseData: Record<string, any> = {};
 
     for (const result of results) {
-      if (result.status === "fulfilled") {
+      if (result.status === "fulfilled" && result.value) {
         const [key, data] = result.value;
         responseData[key] = data;
-      } else {
-        console.warn(`[runNodeRequests] Node request failed:`, result.reason);
+      } else if (result.status === "rejected") {
+        console.warn("[runNodeRequests] node failed:", result.reason);
       }
     }
 
@@ -60,8 +65,9 @@ export function useEngine(data: any) {
   };
 
   const populateState = (data: any) => {
-    for (let key in data) {
+    for (const key in data) {
       const node = nodes.get(key);
+      if (!node) continue;
       state[node.self][node.prop] = data[key];
     }
   };

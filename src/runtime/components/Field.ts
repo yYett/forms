@@ -22,7 +22,7 @@ export default defineComponent({
   emits: ["update:modelValue"],
 
   setup(props, { slots, attrs, emit, expose }) {
-    const id = useId();
+    const id = attrs?.id || useId();
 
     watchEffect(() => {
       console.log("Field Changed", props.label, props);
