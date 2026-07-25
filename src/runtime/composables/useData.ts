@@ -48,6 +48,7 @@ export function useData(data: any) {
       }
     }
 
+    field.validationRules = extractValidationRules(field);
     fields.push(field);
   }
 
@@ -86,3 +87,44 @@ function extractDeps(input: unknown): string[] {
 
   return [...deps];
 }
+
+export function extractValidationRules(field: any): any[] {
+  const args: any[] = [];
+
+  args.push(["required", field.required]);
+
+  if (field.type != null && ["email", "url", "password"].includes(field.type)) {
+    args.push([field.type]);
+  }
+
+  if (field.pattern != null) {
+    args.push(["pattern", { regex: field.pattern }]);
+  }
+
+  if (field.minlength != null || field.maxlength != null) {
+    const { minlength: min, maxlength: max } = field;
+
+    args.push([
+      "length",
+      { ...(min != null && { min }), ...(max != null && { max }) },
+    ]);
+  }
+
+  if (field.min != null || field.max != null) {
+    const { min, max } = field;
+    args.push([
+      "range",
+      { ...(min != null && { min }), ...(max != null && { max }) },
+    ]);
+  }
+
+  args.push(...(field.validationRules ?? []));
+
+  return args;
+}
+
+// show field group if palte is invalid or not found
+
+// Static — no auth. But tokens are runtime concerns: they live in a cookie, a store, or a composable. They can't be in the field schema.
+// The right place — a request interceptor
+// Same pattern Nuxt's $fetch already supports via ofetch:

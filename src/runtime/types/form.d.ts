@@ -4,13 +4,7 @@ type BaseField = {
   disabled?: boolean;
   required?: boolean;
   readonly?: boolean;
-  hidden?: boolean;
-  // value?: string
 };
-
-type TextTypes = "text" | "password" | "email" | "search" | "tel" | "url";
-type DateTypes = "date" | "datetime-local" | "month" | "week" | "time";
-type NumericTypes = "number" | "range";
 
 type TextProps = {
   placeholder?: string;
@@ -64,8 +58,13 @@ export type Checkbox = BaseField;
 
 export type Radio = BaseField;
 
+export type Option = {
+  label: string;
+  value: string | number;
+};
+
 export type Select = {
-  options: { label: string; value: string }[];
+  options: Option[];
 } & BaseField;
 
 export type FieldMap = {

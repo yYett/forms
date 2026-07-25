@@ -2,14 +2,16 @@ import { useData } from "./useData";
 import { useGraph } from "./useGraph";
 import { useNode } from "./useNode";
 import { useExecutor } from "./useExecutor";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
+import { useValidation } from "./useValidation";
 
-export function useEngine(data: any) {
+export function useEngine(data: any, language: string) {
   const { fields } = useData(data);
   const { nodes } = useNode(fields);
   const { graph } = useGraph(nodes);
 
   const state = reactive<Record<string, any>>({});
+  const fieldsById = new Map(fields.map((field: any) => [field.id, field]));
 
   for (let field of fields) {
     let runtime: any = {
@@ -28,10 +30,14 @@ export function useEngine(data: any) {
     state[field.id] = runtime;
   }
 
-  const { resolveGuard, buildRequest, executeNode, execute } = useExecutor(
-    nodes,
-    state,
-  );
+  const runtime = computed(() => {
+    return Object.values(state).reduce((acc: any, { name, value }) => {
+      if (!(name in acc)) acc[name] = value;
+      else acc[name] = [].concat(acc[name], value);
+      return acc;
+    }, {});
+  });
+
   console.log("state", state);
 
   /**
@@ -72,10 +78,33 @@ export function useEngine(data: any) {
     }
   };
 
+  const { executeNode, execute } = useExecutor(nodes, state, runtime);
+  const { validate, revalidateDeps } = useValidation(fields, runtime, language);
+
   const set = (value: any, id: string): void => {
     state[id].value = value;
+
+    const field = fieldsById.get(id);
+    console.log(value, id, field);
+
+    if (!field) return;
+
+    const errorMessage = validate(id, value, field);
+    console.log("errorMessage", errorMessage);
+
+    if (errorMessage) {
+      state[id].errorMessage = errorMessage;
+      return;
+    }
+
+    state[id].errorMessage = "";
+
     const deps = graph[state[id].name];
     execute(deps);
+
+    revalidateDeps(state[id].name, fieldsById, (depID, depErrorMsg) => {
+      state[depID].errorMessage = depErrorMsg ? depErrorMsg : "";
+    });
   };
 
   return {

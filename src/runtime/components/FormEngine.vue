@@ -32,7 +32,79 @@ const data = {
       label: "Name",
       name: "name",
       visible: ["notEmpty", "$country"],
+      required: true,
+      minlength: 2,
+      maxlength: 2,
     },
+    {
+      as: "text",
+      label: "Confirm Name",
+      name: "confirmName",
+      visible: ["notEmpty", "$country"],
+      required: true,
+      validationRules: [["sameAs", { field: "$name" }]],
+    },
+    {
+      as: "text",
+      label: "Email",
+      type: "email",
+      name: "email",
+      visible: ["notEmpty", "$country"],
+      required: true,
+      maxlength: 80,
+    },
+    {
+      as: "text",
+      label: "Phone",
+      name: "phone",
+      visible: ["notEmpty", "$country"],
+      required: true,
+      minlength: 8,
+      maxlength: 8,
+    },
+    {
+      as: "text",
+      label: "Age",
+      name: "age",
+      type: "number",
+      visible: ["notEmpty", "$country"],
+      required: false,
+      min: 18,
+      max: 65,
+    },
+    // {
+    //   as: "text",
+    //   label: "Born",
+    //   name: "born",
+    //   type: "date",
+    //   visible: ["notEmpty", "$country"],
+    // },
+    // {
+    //   as: "text",
+    //   label: "work",
+    //   name: "work",
+    //   type: "date",
+    //   visible: ["notEmpty", "$country"],
+    //   validationRules: ["dateAfter", { sibling: "born" }],
+    // },
+    // {
+    //   as: "text",
+    //   label: "NIF",
+    //   name: "nif",
+    //   visible: ["notEmpty", "$country"],
+    //   required: true,
+    //   validationRules: [
+    //     ["fetch", { api: "/api/check-nif", query: { country: "$country" } }],
+    //   ],
+    // },
+    // {
+    //   as: "text",
+    //   label: "Plate",
+    //   name: "plate",
+    //   visible: ["notEmpty", "$country"],
+    //   required: true,
+    //   pattern: "",
+    // },
     {
       as: "select",
       label: "City",
@@ -106,7 +178,7 @@ const data = {
       visible: ["notEmpty", "$pvp"],
     },
   ],
-  rules: [
+  reactiveRules: [
     {
       guard: ["notEmpty", "$event"],
       action: "fetch",
@@ -119,10 +191,18 @@ const data = {
       },
       effects: [{ action: "reset", target: "coupon", value: "" }],
     },
+    {
+      guard: ["notEmpty", "$Date"],
+      action: "validate",
+      args: {},
+    },
   ],
 };
 
-const { fields, state, runNodeRequests, populateState, set } = useEngine(data);
+const { fields, state, runNodeRequests, populateState, set } = useEngine(
+  data,
+  "en",
+);
 
 const { data: nodeResults } = await useAsyncData(
   "node-requests",
@@ -132,24 +212,32 @@ populateState(nodeResults.value);
 </script>
 
 <template>
-  <div class="form">
-    <h2>Tester</h2>
+  <div
+    class="tester"
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    "
+  >
+    <h2 style="grid-column: 1 / -1">Tester</h2>
 
     <ClientOnly>
       <pre>{{ state }}</pre>
     </ClientOnly>
 
-    <Field
-      v-for="{ visible, id, ...attributes } in fields"
-      :key="id"
-      v-model="state[id].value"
-      v-bind="{ id, ...attributes, ...state[id] }"
-      v-show="state[id].visible"
-      @update:modelValue="set($event, id)"
-    >
-      <!-- <template #meta>
-        <pre> {{ { ...attributes, ...state[id] } }}</pre>
-      </template> -->
-    </Field>
+    <form class="form">
+      <Field
+        v-for="{ id, ...attributes } in fields"
+        :key="id"
+        v-model="state[id].value"
+        v-bind="{ id, ...attributes, ...state[id] }"
+        v-show="state[id].visible"
+        @update:modelValue="set($event, id)"
+      >
+        <!-- <template #meta>
+          <pre> {{ { ...attributes, ...state[id] } }}</pre>
+        </template> -->
+      </Field>
+    </form>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import type { VNode } from "vue";
 import type { ControlArgs } from "../types/form";
-import { h } from "vue";
+import { h, resolveComponent } from "vue";
 
 function onInputValue(onUpdate: any) {
   return (e: Event) => onUpdate?.((e.target as HTMLInputElement).value);
@@ -87,4 +87,16 @@ export const fieldControls = {
 
   // combobox: (args: any) => h(MyCombobox, args),
   // checkboxGroup: (args: any) => h(MyCheckboxGroup, args),
+
+  // default: ({
+  //   modelValue,
+  //   "onUpdate:modelValue": onUpdate,
+  //   style: _style,
+  //   $nodes: _$nodes,
+  //   visible: _visible,
+  //   ...attrs
+  // }) => {
+  //   const component = resolveComponent(attrs.as);
+  //   return h(component, attrs);
+  // },
 };

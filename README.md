@@ -1,84 +1,165 @@
-<!--
-Get your module up and running quickly.
+composables/engine/
+│
+├─ useSchema.ts
+├─ useState.ts
+├─ useNodes.ts
+├─ useGraph.ts
+├─ useExpressions.ts
+├─ useExecutor.ts
+├─ useScheduler.ts
+├─ useAction.ts
+├─ useEngine.ts
+│
+├─ actions/
+│  ├─ fetch.ts
+│  ├─ calc.ts
+│  ├─ reset.ts
+│  ├─ set.ts
+│  └─ validate.ts
+│
+├─ utils/
+│  ├─ extractDeps.ts
+│  ├─ resolvePath.ts
+│  ├─ topologicalSort.ts
+│  └─ evaluate.ts
+│
+└─ types/
+   ├─ field.ts
+   ├─ rule.ts
+   └─ node.ts
 
-Find and replace all on all files (CMD+SHIFT+F):
-- Name: My Module
-- Package name: my-module
-- Description: My new Nuxt module
--->
+# Form Engine Use Cases
 
-# My Module
+## 1. Data Fetching
+- Preload field value from API
+- Load select options from API
+- Load dependent options (Country → City → Events)
+<!-- - Autocomplete / search -->
+- Load related entity data
+- Refresh data when dependencies change
+- Lazy-load data when field becomes visible
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+---
 
-My new Nuxt module for doing amazing things.
+## 2. Computed Values
+- Arithmetic calculations
+- Totals and subtotals
+- Percentages
+- Taxes
+- Discounts
+- Currency conversion
+- Date calculations
+- Duration calculations
+- Aggregations (sum, avg, min, max)
+- Derived fields (Full Name, Display Name, etc.)
 
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
+---
 
-## Features
+## 3. Visibility
+- Show field
+- Hide field
+- Show section
+- Hide section
+- Show step
+- Hide step
 
-<!-- Highlight some of the features your module provide here -->
-- ⛰ &nbsp;Foo
-- 🚠 &nbsp;Bar
-- 🌲 &nbsp;Baz
+---
 
-## Quick Setup
+## 4. State Control
+- Enable field
+- Disable field
+- Read-only field
+- Set default value
+- Reset field
+- Reset dependent fields
+- Clear field
+- Copy value from another field
 
-Install the module to your Nuxt application with one command:
+---
 
-```bash
-npx nuxt module add my-module
-```
+## 5. Validation
+- Required
+- Conditional required
+- Pattern validation
+- Range validation
+- Cross-field validation
+- API validation
+- Business rule validation
 
-That's it! You can now use My Module in your Nuxt app ✨
+---
+
+## 6. Value Transformation
+- Uppercase
+- Lowercase
+- Trim
+- Format phone
+- Format currency
+- Format date
+- Normalize value
+- Unit conversion
+
+---
+
+## 7. Actions
+- Fetch data
+- Save draft
+- Submit form
+- Trigger workflow
+- Send notification
+- Call webhook
+- Execute custom action
+
+---
+
+## 8. Collections
+- Add row
+- Remove row
+- Clone row
+- Calculate row totals
+- Calculate collection totals
+- Validate collection size
+
+---
+
+## 9. Access Control
+- Role-based visibility
+- Role-based editing
+- Feature flags
+- User-specific behavior
+
+---
+
+## 10. File Handling
+- Upload file
+- Validate file
+- Extract metadata
+- OCR processing
+- Generate document
+
+---
+
+## 11. Workflow
+- Step progression
+- Step skipping
+- Approval flows
+- Status transitions
+
+---
+
+## 12. Integrations
+- CRM lookup
+- ERP lookup
+- Address lookup
+- Tax service lookup
+- Payment provider lookup
+- Shipping provider lookup
 
 
-## Contribution
-
-<details>
-  <summary>Local development</summary>
-  
-  ```bash
-  # Install dependencies
-  npm install
-  
-  # Generate type stubs
-  npm run dev:prepare
-  
-  # Develop with the playground
-  npm run dev
-  
-  # Build the playground
-  npm run dev:build
-  
-  # Run ESLint
-  npm run lint
-  
-  # Run Vitest
-  npm run test
-  npm run test:watch
-  
-  # Release new version
-  npm run release
-  ```
-
-</details>
-
-
-<!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-version-href]: https://npmjs.com/package/my-module
-
-[npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-downloads-href]: https://npm.chart.dev/my-module
-
-[license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[license-href]: https://npmjs.com/package/my-module
-
-[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt
-[nuxt-href]: https://nuxt.com
+- Field A
+  - this field is required
+  - this field is invalid
+  - this field is empty
+- Field B
+  - this field value must be greater than Field C
+  - this field value equal Field C
+  - 

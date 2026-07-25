@@ -39,11 +39,11 @@ export default defineComponent({
           slots?.start?.(),
 
           fieldControls?.[props.as]?.({
+            ...attrs,
             id,
             modelValue: props.modelValue,
             "onUpdate:modelValue": (val: string) =>
               emit("update:modelValue", val),
-            ...attrs,
           }),
 
           slots.end?.(),

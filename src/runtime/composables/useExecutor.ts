@@ -1,23 +1,17 @@
 import { evaluateExpr } from "../utils/expr";
-import { computed } from "vue";
+import { computed, Ref } from "vue";
 
 export function useExecutor(
   nodes: Map<string, any>,
   state: Record<string, any>,
+  runtime: Ref<Record<string, any>>,
 ) {
-  const runtime = computed(() => {
-    return Object.values(state).reduce((acc: any, { name, value }) => {
-      if (!(name in acc)) acc[name] = value;
-      else acc[name] = [].concat(acc[name], value);
-      return acc;
-    }, {});
-  });
-
   const registry: Record<string, (node: any) => any> = {
     fetch: (node: any) => {
       const request = buildRequest(node);
       return request ? request() : undefined;
     },
+
     expr: (node: any) => evaluateExpr(node.args, runtime.value),
   };
 
@@ -30,6 +24,7 @@ export function useExecutor(
     if (typeof params === "string" && params.startsWith("$")) {
       return values[params.slice(1)];
     }
+
     if (
       params !== null &&
       typeof params === "object" &&
@@ -44,6 +39,7 @@ export function useExecutor(
           ),
       );
     }
+
     return params;
   }
 
@@ -64,6 +60,7 @@ export function useExecutor(
     const fn = registry[node.strategy];
     if (!fn) return null;
 
+    // maybe some check if fetch or something else, try not proxy all
     return Promise.resolve(fn(node))
       .then((res) => [key, res] as const)
       .catch((err) => {
@@ -77,6 +74,8 @@ export function useExecutor(
    * Fires executeNode for each dep, writes results immediately as they resolve.
    */
   const execute = (deps: string[]): void => {
+    if (!deps?.length) return;
+
     for (const key of deps) {
       const node = nodes.get(key);
       if (!node) continue;
