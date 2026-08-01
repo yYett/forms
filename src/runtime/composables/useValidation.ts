@@ -33,7 +33,7 @@ export function useValidation(
   ): string | null => {
     if (!key) return null;
 
-    const arg = errorMessages?.[key] || errorMessages.default;
+    const arg = errorMessages?.[key] || errorMessages.required;
     return typeof arg === "function" ? arg(params) : arg;
   };
 
@@ -65,6 +65,25 @@ export function useValidation(
     return error;
   };
 
+  const validateAll = (
+    fields: any[],
+    callback: (arg: string | null) => void,
+  ): boolean => {
+    let isValid = true;
+
+    for (const field of fields) {
+      const error = validateSync(
+        field.id,
+        runtime.value[field.name]?.value,
+        field,
+      );
+      callback(error);
+      if (error) isValid = false;
+    }
+
+    return isValid;
+  };
+
   const revalidateDeps = (
     ref: string,
     fieldsById: Map<string, any>,
@@ -81,7 +100,7 @@ export function useValidation(
     }
   };
 
-  return { validate, revalidateDeps };
+  return { validate, validateAll, revalidateDeps };
 }
 
 function injectRegistry() {
@@ -110,7 +129,7 @@ function injectRegistry() {
     {
       name: "length",
       normalize: (v) => (typeof v === "string" ? v.trim() : v),
-      validate({ value, params: { min, max, exact } }) {
+      validate({ value, params: { min, max } }) {
         if (!value) return null;
         const len = String(value).length;
         if (min != null && min === max && (min > len || len > max))
@@ -161,6 +180,8 @@ function getValidationDeps(fields: any[]) {
   const validationDeps = new Map<string, string[]>();
 
   for (const field of fields) {
+    if (!field.validationRules?.length) continue;
+
     for (const [, params] of field.validationRules) {
       if (!params) continue;
 
@@ -184,7 +205,6 @@ function injectErrorMessages(language: string) {
     Record<string, string | ((p: Record<string, any>) => string)>
   > = {
     en: {
-      default: "This value isn't valid",
       required: "This field is required",
       "email.invalid": "Enter a valid email address",
       "date.invalid": "Enter a valid date",
