@@ -21,7 +21,6 @@ export function useEngine(data: any, language: string) {
     for (let prop of field.$nodes) {
       const node = nodes.get(`${field.id}.${prop}`);
       if (!node) continue;
-
       runtime[prop] = node?.default;
     }
 
@@ -37,8 +36,6 @@ export function useEngine(data: any, language: string) {
       return acc;
     }, {});
   });
-
-  console.log("state", state);
 
   /**
    * Init path: batch-executes all $nodes.
@@ -79,18 +76,21 @@ export function useEngine(data: any, language: string) {
   };
 
   const { executeNode, execute } = useExecutor(nodes, state, runtime);
-  const { validate, revalidateDeps } = useValidation(fields, runtime, language);
+  const { validate, validateAll, revalidateDeps } = useValidation(
+    fields,
+    runtime,
+    language,
+  );
 
   const set = (value: any, id: string): void => {
     state[id].value = value;
 
     const field = fieldsById.get(id);
-    console.log(value, id, field);
-
     if (!field) return;
 
     const errorMessage = validate(id, value, field);
-    console.log("errorMessage", errorMessage);
+    // considering runing here cheap, pure UI recalcs » always keep in sync
+    // then run expensive/side-effecting only on valid input
 
     if (errorMessage) {
       state[id].errorMessage = errorMessage;

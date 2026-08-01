@@ -16,8 +16,6 @@ export function useValidation(
   const validationDeps = getValidationDeps(fields);
   const errorMessages = injectErrorMessages(language);
 
-  console.log("validationDeps", validationDeps);
-
   const buildCtx = (id: string, value: any, field: any, params: any) => {
     return {
       value,
@@ -43,7 +41,10 @@ export function useValidation(
 
     for (const entry of entries) {
       const validation = registry.get(entry.name);
-      if (!validation?.validate) continue;
+      if (!validation?.validate) {
+        console.warn(`Missing validation "${entry.name}"`);
+        continue;
+      }
 
       const normalized = validation.normalize
         ? validation.normalize(value)

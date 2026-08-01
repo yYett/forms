@@ -91,5 +91,5 @@ export function useExecutor(
     }
   };
 
-  return { runtime, resolveGuard, buildRequest, executeNode, execute };
+  return { resolveGuard, buildRequest, executeNode, execute };
 }

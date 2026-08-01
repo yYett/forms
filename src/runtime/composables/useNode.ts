@@ -18,7 +18,5 @@ export function useNode(fields: any[]) {
     }
   }
 
-  console.log("nodes", nodes);
-
   return { nodes };
 }

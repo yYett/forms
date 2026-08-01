@@ -6,14 +6,11 @@ export function useGraph(nodes: Map<string, any>) {
         acc[dep].push(key);
       }
 
-      acc["$nodes"]!.push(key);
-
+      acc.$nodes.push(key);
       return acc;
     },
     { $nodes: [] },
   );
-
-  console.log("graph", graph);
 
   return { graph };
 }
