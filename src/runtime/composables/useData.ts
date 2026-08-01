@@ -8,17 +8,14 @@ export function useData(data: any) {
 
   for (let i = 0; i < data.fields.length; i++) {
     const field: any = data.fields[i];
+    field.id = `${field.name}${i}`;
+    field.$nodes = [];
 
     for (const prop in field) {
       const propValue = field[prop];
-      field.$nodes = [];
-      field.id = `${field.name}${i}`;
 
       if (["required", "disabled", "visible", "readonly"].includes(prop)) {
-        if (typeof propValue === "boolean") {
-          // field[prop] = { strategy: "static", default: propValue };
-          continue;
-        }
+        if (typeof propValue === "boolean") continue;
 
         if (Array.isArray(propValue)) {
           field[prop] = {
@@ -43,16 +40,12 @@ export function useData(data: any) {
           field.$nodes.push(prop);
           continue;
         }
-
-        // field[prop] = { strategy: "static", default: propValue };
       }
     }
 
     field.validationRules = extractValidationRules(field);
     fields.push(field);
   }
-
-  console.log("fields", fields);
 
   return { fields };
 }
@@ -88,7 +81,7 @@ function extractDeps(input: unknown): string[] {
   return [...deps];
 }
 
-export function extractValidationRules(field: any): any[] {
+function extractValidationRules(field: any): any[] {
   const args: any[] = [];
 
   args.push(["required", field.required]);
